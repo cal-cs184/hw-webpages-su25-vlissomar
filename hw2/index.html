@@ -32,11 +32,11 @@
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cal-cs184.github.io/hw-webpages-su25-vlissomar/hw2/index.html">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage: <a href="https://cal-cs184.github.io/hw-webpages-su25-vlissomar/hw2/index.html">cs184.eecs.berkeley.edu/sp25</a>
 
 		<br>
 		
-		Link to GitHub repository: (TODO) <a href="https://github.com/cal-cs184/hw2-meshedit-orz1412">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184/hw2-meshedit-orz1412">cs184.eecs.berkeley.edu/sp25</a>
 
 		<figure>
 			<img src="teapot.png" alt="Teapot" style="width:50%"/>
@@ -50,7 +50,8 @@
 		<h2>Overview</h2>
 		Woodworking is 90% sanding. Similarly, in this homework, I've discovered that mesh manipulation is 80% pointers and 10% crying when a mesh face disappears for no (apparent) reason.
 		On a more positive note, I finally understand why halfedges are compared to the 'glue' of the mesh. The halfedges hold all the relevant data about where it is in the mesh (stored in halfedge->vertex and halfedge->twin->vertex) and strictly unique mesh element assignments. Because the halfedges are so restricted, vertices, faces, and edges can just point to an arbitrary halfedge for consistent mesh traversal of any kind. 
-
+		As for Bezier curves and surfaces, they're just made of lerps. Not too complicated.
+			
 		<h2>Section I: Bezier Curves and Surfaces</h2>
 
 		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
@@ -63,43 +64,79 @@
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="bezier_pt1 (1).png" width="400px"/>
-				  <figcaption>Step 1.</figcaption>
+				  <figcaption>Step 1</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="bezier_pt1 (2).png" width="400px"/>
-				  <figcaption>Step 2.</figcaption>
+				  <figcaption>Step 2</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="bezier_pt1 (3).png" width="400px"/>
-				  <figcaption>Step 3.</figcaption>
+				  <figcaption>Step 3</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="bezier_pt1 (4).png" width="400px"/>
-				  <figcaption>Step 4.</figcaption>
+				  <figcaption>Step 4</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
 				  <img src="bezier_pt1 (5).png" width="400px"/>
-				  <figcaption>Step 5.</figcaption>
+				  <figcaption>Step 5</figcaption>
 				</td>
 				<td style="text-align: center;">
 				  <img src="bezier_pt1 (6).png" width="400px"/>
-				  <figcaption>Step 6.</figcaption>
+				  <figcaption>Step 6</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
+		<figure>
+			<img src="hw2-bezier_pt1 (2).gif" alt="Teapot" style="width:50%"/>
+			<figcaption>Bezier Curve with lerping t and different control points</figcaption>
+		</figure>
 
 		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Bezier curves can easily be extended to bezier surfaces because a curve is just a line. Naturally, we can also linearly interpolate across this curve, which is all Bezier curves are. We would also have to use a new parameter u, v instead of just t so we can cover a 2D area, as opposed to a 1D line.
 
+		<figure>
+			<img src="bezier_teapot.png" alt="Teapot" style="width:50%"/>
+			<figcaption>Bezier Teapot</figcaption>
+		</figure>
 		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 		<h3>Part 3: Area-weighted vertex normals</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<ol type="1">
+			<li>Initialize our return Vector3D, vert_norm</li>
+			<li>Get the halfedge of this vertex. We start our while loop from here, until we reach this same edge again</li>
+			<li>Since we are guaranteed triangle meshes for this assignment, we collect the other two Vector3D coordinates of the vertices in the current face by halfedge->next()</li>
+			<li>Create edge vectors with v3 - v1 and v2 - v1, where v1 is our current vertex.</li>
+			<li>Compute the crossproduct, V. This actually gives us both the area and the normal vector of the current face
+				<ol type="a">
+					<li>Area = |V|/2 </li>
+					<li>Normal vector = V / |V| </li>
+				</ol>
+			</li>
+			<li>Vert_norm += area * normal_vector</li>
+			<li>When the loop ends, normalize vert_norm and return it</li>
+		</ol>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="flat_teapot.png" width="400px"/>
+				  <figcaption>Flat Shading</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="smooth_teapot.png" width="400px"/>
+				  <figcaption>Smooth Shading</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h3>Part 4: Edge flip</h3>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
