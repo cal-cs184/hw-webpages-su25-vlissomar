@@ -32,11 +32,11 @@
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage: (TODO) <a href="https://cal-cs184.github.io/hw-webpages-su25-vlissomar/hw2/index.html">cs184.eecs.berkeley.edu/sp25</a>
 
 		<br>
 		
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository: (TODO) <a href="https://github.com/cal-cs184/hw2-meshedit-orz1412">cs184.eecs.berkeley.edu/sp25</a>
 
 		<figure>
 			<img src="teapot.png" alt="Teapot" style="width:50%"/>
@@ -48,34 +48,46 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		Woodworking is 90% sanding. Similarly, in this homework, I've discovered that mesh manipulation is 80% pointers and 10% crying when a mesh face disappears for no (apparent) reason.
+		On a more positive note, I finally understand why halfedges are compared to the 'glue' of the mesh. The halfedges hold all the relevant data about where it is in the mesh (stored in halfedge->vertex and halfedge->twin->vertex) and strictly unique mesh element assignments. Because the halfedges are so restricted, vertices, faces, and edges can just point to an arbitrary halfedge for consistent mesh traversal of any kind. 
 
 		<h2>Section I: Bezier Curves and Surfaces</h2>
 
 		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		de Casteljau’s algorithm recursively reduces the number of control points by picking ‘new’ control points that are some fractional t (t : [0, 1]) of the way between two consecutive control points. For every n control points, there are only n - 1 edges like this. Each time our recursive de Casteljau step is called, we pick new control points until there is only 1 point, which is just defined as a point on the curve. 
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+
+		<p>Recursive Steps of Bezier Curves</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="bezier_pt1 (1).png" width="400px"/>
+				  <figcaption>Step 1.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="bezier_pt1 (2).png" width="400px"/>
+				  <figcaption>Step 2.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="bezier_pt1 (3).png" width="400px"/>
+				  <figcaption>Step 3.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="bezier_pt1 (4).png" width="400px"/>
+				  <figcaption>Step 4.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="bezier_pt1 (5).png" width="400px"/>
+				  <figcaption>Step 5.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="bezier_pt1 (6).png" width="400px"/>
+				  <figcaption>Step 6.</figcaption>
 				</td>
 			  </tr>
 			</table>
