@@ -61,39 +61,38 @@
 		<p>Recursive Steps of Bezier Curves</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="bezier_pt1 (1).png" width="400px"/>
-				  <figcaption>Step 1</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="bezier_pt1 (2).png" width="400px"/>
-				  <figcaption>Step 2</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="bezier_pt1 (3).png" width="400px"/>
-				  <figcaption>Step 3</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="bezier_pt1 (4).png" width="400px"/>
-				  <figcaption>Step 4</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="bezier_pt1 (5).png" width="400px"/>
-				  <figcaption>Step 5</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="bezier_pt1 (6).png" width="400px"/>
-				  <figcaption>Step 6</figcaption>
-				</td>
-			  </tr>
+				<tr>
+					<td style="text-align: center;">
+						<img src="bezier_pt1 (1).png" width="400px"/>
+						<figcaption>Step 1</figcaption>
+					</td>
+					<td style="text-align: center;">
+						<img src="bezier_pt1 (2).png" width="400px"/>
+						<figcaption>Step 2</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+						<img src="bezier_pt1 (3).png" width="400px"/>
+						<figcaption>Step 3</figcaption>
+					</td>
+					<td style="text-align: center;">
+						<img src="bezier_pt1 (4).png" width="400px"/>
+						<figcaption>Step 4</figcaption>
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: center;">
+					  	<img src="bezier_pt1 (5).png" width="400px"/>
+					  	<figcaption>Step 5</figcaption>
+					</td>
+					<td style="text-align: center;">
+				  		<img src="bezier_pt1 (6).png" width="400px"/>
+				  		<figcaption>Step 6</figcaption>
+					</td>
+			  	</tr>
 			</table>
 		</div>
-			
 		<figure>
 			<img src="hw2-bezier_pt1 (2).gif" alt="Teapot" style="width:50%"/>
 			<figcaption>Bezier Curve with lerping t and different control points</figcaption>
@@ -126,87 +125,85 @@
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="flat_teapot.png" width="400px"/>
-				  <figcaption>Flat Shading</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="smooth_teapot.png" width="400px"/>
-				  <figcaption>Smooth Shading</figcaption>
-				</td>
-			  </tr>
+				<tr>
+					<td style="text-align: center;">
+						<img src="flat_teapot.png" width="400px"/>
+					  	<figcaption>Flat Shading</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  	<img src="smooth_teapot.png" width="400px"/>
+					  	<figcaption>Smooth Shading</figcaption>
+					</td>
+			  	</tr>
 			</table>
 		</div>
 
 		<h3>Part 4: Edge flip</h3>
-		The edge flip method was miraculously bug-free despite not following the recommendation of re-assigning attributes for all mesh objects. I probably got lucky. To avoid losing pointers, I made a reference for all 6 relevant halfedges, and just reassigned their next() and face() pointers (after first ensuring that the faces  pointed to a correct halfedge in the new orientation). The flipped edge e0's halfedges are the only ones that get their vertex reassigned. Then, the vertices on either side of e0 pre-flip get reassigned halfedges just in case they pointed to the flipping halfedges.
+		Edge Flips were miraculously bug-free despite not following the recommended workflow of assigning everything. From former experience implementing doubly linked lists, I was really careful about making sure I had references to all 6 inner half edges of the two relevant faces so nothing would be accidentally dropped while reassigning halfedge->next() attributes. 
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="preFlip_teapot.png" width="400px"/>
-				  <figcaption>Before</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="postFlip_teapot.png" width="400px"/>
-				  <figcaption>After</figcaption>
-				</td>
-			  </tr>
+				<tr>
+					<td style="text-align: center;">
+						<img src="flat_teapot.png" width="400px"/>
+					  	<figcaption>Before</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  	<img src="smooth_teapot.png" width="400px"/>
+					  	<figcaption>After</figcaption>
+					</td>
+			  	</tr>
 			</table>
 		</div>
-		
+
 		<h3>Part 5: Edge split</h3>
-		Here's where I mess up. My first error was that I had to declare and initialize all new objects before referencing them, but I didn't initialize. My pointers were assigned the c++ equivalent of None or null objects. This took a long time to fix because I somehow completely missed that there were given methods newVertex, newFace, newHalfedge, etc. By the time I figured that out, I had a different issue: my code stopped crashing, but on every edge split, two of the four smaller faces would just drop out of existence. What this looked like, is that instead of being a normal, bright surfaced teapod, I had smaller dark triangles that, when hovered over, had 20 different edges, halfedges, faces, vertices at what looked to be random aread. 2 hours later, I discover thes new edges I seemed to have created are actually just part of the other side of the mesh. <br>
-		Finally, with typical debugging (very many print statements), I figure out I dropped a face's halfedge pointer in my helper function. <br>
-
+		Because I was only assigning pointers for mesh elements I thought were needed rather than being cautious and assigning everything, I ended up missing the halfedge of a face. Every time I split an edge, 2 of the 4 small faces just drop out of existence. What this meant to me, visually, was that my edgeSplit created 10 different and randomly placed edges, halfedges, vertices, and faces. Halfedges sometimes pointed to the center of another face, and there was no vertex at its end. Faces of this odd triangle were dark, which made me think the winding order was wrong and somehow my splitEdge flipped a face while also destroying it. It was very confusing until I figured out that it was actually the other side of the mesh. I spent three hours trying to understand where I was creating so many mesh elements. Next time, I think I will assign pointers for every element. 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="preSplit.png" width="400px"/>
-				  <figcaption>Before: splits</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="postSplit.png" width="400px"/>
-				  <figcaption>After: splits</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="preSplitFlip.png" width="400px"/>
-				  <figcaption>Before: splits, flips</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="postSplitFlip.png" width="400px"/>
-				  <figcaption>After: splits, flips</figcaption>
-				</td>
-			  </tr>
+				<tr>
+					<td style="text-align: center;">
+						<img src="preSplit.png" width="400px"/>
+					  	<figcaption>Before: split</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  	<img src="postSplit.png" width="400px"/>
+					  	<figcaption>After: split</figcaption>
+					</td>
+			  	</tr>
+				<tr>
+					<td style="text-align: center;">
+						<img src="preSplitFlip.png" width="400px"/>
+					  	<figcaption>Before: split & flip</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  	<img src="postSplitFlip.png" width="400px"/>
+					  	<figcaption>After: split & flip</figcaption>
+					</td>
+			  	</tr>
 			</table>
 		</div>
-			
-		Structure-wise, I used the splitEdge function to simply split the edge (create 1 new edge, 2 halfedges, 1 vertex), and call a helper function on the vertex and the halfedge along the split edge if the associated face isn't the boundary. This worked great to handle split operations on boundary edges
+		Extra Credit: To implement boundary support, I used a helper method, splitHalfEdge. In splitEdge, I create the new vertex m, 1 edge, and its two associated halfedges. After correcting assignments, I call splitHalfedge on m and the outgoing halfedge for the face if the face is not a boundary face. splitHalfEdge then creates the new edge between m and the opposite old vertex, as well as its associated edges, and another face. With this structure, boundary edges won't be split on the side of the boundary. 
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="boundary_preSplit.png" width="400px"/>
-				  <figcaption>Before: boundary</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="boundary_postSplit.png" width="400px"/>
-				  <figcaption>After: boundary</figcaption>
-				</td>
-			  </tr>
+				<tr>
+					<td style="text-align: center;">
+						<img src="boundary_preSplit.png" width="400px"/>
+					  	<figcaption>Before</figcaption>
+					</td>
+					<td style="text-align: center;">
+					  	<img src="boundary_postSplit.png" width="400px"/>
+					  	<figcaption>After</figcaption>
+					</td>
+			  	</tr>
 			</table>
 		</div>
 
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Loop subdivision was implemented with 1 loop over vertices and 3 loops over edges. As suggested, I precalculated new and old vertex updated positions with 1 vertex loop and 1 edge loop. In the edge loop, I also added a counter to get the number of edges in the original mesh. We also mark edges and vertices as 'old' by setting isNew = false. <br>
+		This counter is my brute force solution to only iterating over the original mesh while splitting. It works because new mesh elements like Edge are only inserted at the very back of the list, and we only create new edges. Originally, I intended to <code>break<code> or <code>continue<code> the loop if the edge isNew, but this means all 4 smaller edges created from a splitEdge must be marked isNew = true. This causes problems when we try to flip new edges that connect old and new vertices, which is really unfortunate. On the other hand, if only the 2 small, completely new edges are marked isNew, then we will wrongly split an edge that has already been split because the first edge created in my splitEdge method is along the old edge. As a result, it will also be the first edge after the original edges, and be split before reaching a completely new edge and breaking from the loop. Somehow, this also led my laptop to seek the heat death of the universe in an infinite loop. I'm still not too sure what happened. <br>
+		With the counter, we can be assured that we only split edges part of the original mesh. WHile this occurs, we update the location of the new vertex in this loop because splitEdge conveniently returns the new VertexIter. This way, we don't have to go searching the vertex's neihbors for the edge it came from. <br>
+		Lastly, we update positions of old vertices. First, check the flag isNew == false, then update its position. Simple.<br>
+		Loop Subdivision Effects: This algorithm tends to 'round' the mesh, sharpening corners and edges. 
 
 		<h2>Additional Notes (please remove)</h2>
 		<ul>
