@@ -48,9 +48,15 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Part 1: Ray Generation and Scene Intersection</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+		<h3>Ray Generation</h3>
+		As stated in the specs, we transform from image to camera coordinates, generate a ray, which is then transformed into world space. To get into camera space, we simply shift the image so it's in the z = -1 plane, center it on the z-axis (subtract 0.5 from x, y), then scale it (multiplication by 2 * tan(Fov / 2)). We initialize our ray, and prepare to transform into world space. Ray origin is just the location of our camera in world space, since it's just (0, 0, 0) in camera space. Then, we need to rotate our ray direction into world space using the c2w rotation matrix. Ray generation is complete.
+		<h3>Pixel Sampling</h3>
+		Here, we randomly cast a ray from the camera to a spot within each pixel ns_aa times, get the radiance, and accumulate it into our Monte Carlo estimator, Fn. For reference, Fn = 1 / ns_aa * ∑est_radiance_global_illumination(ray) / p(ray), where p(ray) = 1 because we are in a uniform, continuous distribution, and the 2D area we are sampling over is of size 1. Using the estimate, we update the pixel value within our sampleBuffer.
+		<h3>Intersecting Primitives</h3>
+		For triangles, I use the Moller Trumbore algorithm, whcih solves for a t (if the ray isn't parallel to the plane of the triangle) and barycentric coordinates of intersection, b1, b2, and b1 + b2. If all barycentric coordinates are in [0, 1], then the point of intersection lies within the triangle. 
+		<br>
+		For spheres, I follow the lecture slides, solving for real roots of a quadratic equation. Then, checking for the closest valid t value (within r.max_t and r.min_t), we return true if a valid intersection is detected.
+		<p>Here are some images with normal shading.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
