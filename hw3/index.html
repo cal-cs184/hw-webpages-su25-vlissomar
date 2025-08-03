@@ -84,8 +84,33 @@
 		</div>
 		
 		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<h3>BVH Generation</h3>
+		<ol type="1">
+  			<li>Construct the bounding box for the node. This is necessary for all nodes, interior or leaf. It is also convenient to find the min and max values for the centroids of our primitives along each axis. This is used later in step 3.</li>
+			<li>Check the base case: if the number of primitives is lower than parameter max_leaf_size, assign the start and end iterators and return the node.</li>
+			<li>Determine the split:
+				<ol type="a">
+					<li>Split Axis: For my implementation, I chose the axis with the farthest distance between centroids. Centroid min max coordinates were precomputed in step 1.</li>
+      				<li>Split Coordinate: Average centroids coordinates along the axis of split. Note: an optimization would be to also compute this in step 1 to avoid needing another loop over the primitives.</li>
+    			</ol>
+			</li>
+			<li>Sort primitives by the split, and find the split item (the first item in the right child). Simple iteration here, but first,  sort the primitive pointers (given as input by the iterators, start and end) along the axis. This can prevent iterator assignment bugs (like node->start being ahead of node->end). Additionally, we can early break from the sorting loop after getting the split item.</li>
+			<li>Make recursive calls and assign children of the current node. The left child is assigned primitives from start to split, and the right child is assigned primitives from split to end.</li>
+		</ol>
+		Here are some images of large dae files (100k+ primitives) that should not be rendered without BVH.
+		<figure>
+			<img src="2-CBlucy.png" alt"Statue of Angel"/>
+			<figcaption>CBlucy: 133,796 primitives</figcaption>
+		</figure>
+		<figure>
+			<img src="2-blob.png" alt"Blob"/>
+			<figcaption>Blob: 196,608 primitives</figcaption>
+		</figure>
 
+		<h3>Performance Comparison</h3>
+		All images mentioned here were rendered with 1 thread for a resolution of 800 x 600. <br>
+		
+			
 		<h2>Part 3: Direct Illumination</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
