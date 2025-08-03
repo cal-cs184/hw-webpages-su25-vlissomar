@@ -108,7 +108,58 @@
 		</figure>
 
 		<h3>Performance Comparison</h3>
-		All images mentioned here were rendered with 1 thread for a resolution of 800 x 600. <br>
+		All images analyzed below were rendered with 1 thread for a resolution of 800 x 600. <br>
+		<table>
+  			<tr>
+    			<th>Image</th>
+    			<th># Primitives</th>
+    			<th>Time (unoptimized) (s)</th>
+    			<th>Time (BVH) (s)</th>
+  			</tr>
+  			<tr>
+    			<td>banana</td>
+    			<td>2,458</td>
+    			<td>14.0737</td>
+    			<td>0.1637</td>
+  			</tr>
+  			<tr>
+    			<td>cow</td>
+    			<td>5,856</td>
+    			<td>40.7381</td>
+    			<td>0.2415</td>
+  			</tr>
+  			<tr>
+    			<td>bunny</td>
+    			<td>33,696</td>
+    			<td>322.0565</td>
+    			<td>0.2552</td>
+  			</tr>
+  			<tr>
+    			<td>max_planck</td>
+    			<td>50,801</td>
+    			<td>-</td>
+    			<td>0.3361</td>
+  			</tr>
+  			<tr>
+    			<td>bench</td>
+    			<td>67,808</td>
+    			<td>1,386.7399</td>
+    			<td>0.1619</td>
+  			</tr>
+  			<tr>
+    			<td>CBlucy</td>
+    			<td>133,796</td>
+    			<td>-</td>
+    			<td>0.2514</td>
+  			</tr>
+  			<tr>
+    			<td>blob</td>
+    			<td>196,608</td>
+    			<td>-</td>
+    			<td>0.4357</td>
+  			</tr>
+		</table>
+		As can be seen above, BVH renders all images under 1 second. This is incredible, especially since it's not linearly scaling to the increase in the number of primitives. An image with 2,458 primitives took 0.1637 seconds to render, while an image with 80x the number of primitives a little less than 3x the time to render. Evidently, BVH is a crucial optimization for ray tracing. Something of note is that even though the bench image has a high number of primitives (67,808), it took a little less time than the banana (2,458). This is likely because most of bench's bounding boxes are hugging the actual bench object itself. As a result, many rays can early return from recursive calls during ray tracing. In theory, this could mean even better optimization with a better split scheme, such as one where primitives for an object tend to be grouped together in the same bounding box. For scenes with many different objects, this would be largely beneficial, and is probably utilized in game engines like Unity that have boxColliders for gameObjects.
 		
 			
 		<h2>Part 3: Direct Illumination</h2>
