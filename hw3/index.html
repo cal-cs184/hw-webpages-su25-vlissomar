@@ -163,8 +163,69 @@
 		
 			
 		<h2>Part 3: Direct Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<h3>Direct Lighting Functions</h3>
+		<ol type="1">
+			<li>Iterate for each sample. In uniform sampling, this is straightforwardly just num_samples, while in importance sampling, we must iterate over each light, then each sample for each light. During importance sampling we must also change the num_samples per light based on if it's a point or area light, since point lights will generate the same samples each time (and are considered already averaged).
+</li>
+			<li>Get the incoming radiance ray w_in. Uniform sampling uses the provided hemisphereSampler.get_sample() to generate a w_in in object space. Importance sampling is assigned a w_in (as well as other useful values L_in, distToLight, pdf) through light->sample_L(...). Note: w_in starts at hit_p and points to the light source (or the next intersection).</li>
+			<li>Check if w_in is a shadow ray. Set min_t to EPS_F to mitigate floating point precision errors, then intersect the ray with the scene. For uniform sampling, if there is no hit, or the intersected primitive is not a light source (isect_in.bsdf->get_emission().norm() < EPS_F), end the iteration of the loop here to save computation of a discarded sample. For importance sampling, we can additionally set max_t to distToLight - EPS_F so it won't intersect our light. Opposite of uniform sampling, a hit implies occlusion, so we discard the sample on hit instead. </li>
+			<li>Calculate inputs for L_out. costheta can be found with w_in * isect.n if w_in is in world space, or simply w_in.z in object space. bsdf is evaluated by isect.bsdf->f(w_out, w_in) with w_in in object space. L_in is the emission at the intersection from w_in, or alternatively given by light->sample_L(...) mentioned in step 2. pdf is also given by light->sample_L(...), but for uniform sampling, is just 1/(2 * PI) each time. Lastly, N is the num_samples, total in the case of uniform sampling, and for the light in the case of importance sampling. </li>
+			<li>Compute the reflectance, accumulate in L_out, and return L_out. L_out := bsdf * L_in * costheta / pdf / num_samples. </li>
+		</ol>
+		
+		<p>Here are some images rendered with Uniform and Importance sampling for comparison.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+						<img src="3-CBspheres_lambertian_uniform.png" width="480px"/>
+						<figcaption>Spheres: Uniform</figcaption>
+					</td>
+					<td style="text-align: center;">
+						<img src="3-CBspheres_lambertian_importance.png" width="480px"/>
+						<figcaption>Spheres: Importance</figcaption>
+					</td>
+				</tr>
+			  	<tr>
+					<td style="text-align: center;">
+				  		<img src="3-CBbunny_uniform.png" width="480px"/>
+				  		<figcaption>Bunny: Uniform</figcaption>
+					</td>
+					<td style="text-align: center;">
+				  		<img src="3-CBbunny_importance.png" width="480px"/>
+				  		<figcaption>Bunny: Importance</figcaption>
+					</td>
+			  	</tr>
+			</table>
+		</div>
 
+		<p>Here is a dragon rendered with 1 sample per pixel with an increasing number of light rays.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+						<img src="3-dragon_1L.png" width="480px"/>
+						<figcaption>1 Light Ray</figcaption>
+					</td>
+					<td style="text-align: center;">
+						<img src="3-dragon_4L.png" width="480px"/>
+						<figcaption>4 Light Ray</figcaption>
+					</td>
+				</tr>
+			  	<tr>
+					<td style="text-align: center;">
+				  		<img src="3-dragon_16L.png" width="480px"/>
+				  		<figcaption>16 Light Ray</figcaption>
+					</td>
+					<td style="text-align: center;">
+				  		<img src="3-dragon_64L.png" width="480px"/>
+				  		<figcaption>64 Light Ray</figcaption>
+					</td>
+			  	</tr>
+			</table>
+		</div>
+		<h3>Uniform vs Importance</h3>
+		I assumed that Light Sampling should take less time, since it likely generates a lower percentage of useless samples that don't even reach a light source. However, in practice they take similar amounts of time. This is probably because intersection is the bottleneck cost. We are performing the same amounts of intersection with either algorithm, which is why neither of them hold an advantage time-wise. In terms of performance, Light Sampling is clearly the better option. Uniform Sampling produces images that remain grainy even as we increase the number of samples per pixel or the amount of light rays. However, even with a high amount of light rays, with only 1 sample per pixel, the rendered image still looks a little noisy. There are probably diminishing returns here, with better quality images possible by balancing samples per pixel and the amount of light rays.
 		<h2>Part 4: Global Illumination</h2>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
